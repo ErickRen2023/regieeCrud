@@ -1,0 +1,10 @@
+package me.erickren.reggie.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import me.erickren.reggie.pojo.Employee;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface EmployeeMapper extends BaseMapper<Employee> {
+}
+
