@@ -13,3 +13,5 @@ mybatis-plus:
     global-config:
         db-config:
             id-type: ASSIGN_ID
+file:
+    path: D:\Regiee\img

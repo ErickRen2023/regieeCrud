@@ -1,6 +1,7 @@
 package me.erickren.reggie.common;
 
 import lombok.extern.slf4j.Slf4j;
+import me.erickren.reggie.exception.CategoryNotEmptyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,7 +16,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 public class GlobalExceptionHandler {
 
     /**
-     * 处理异常
+     * 处理SQL重复异常
      * @return
      */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
@@ -28,5 +29,16 @@ public class GlobalExceptionHandler {
             } else {
                 return R.error("未知错误！");
             }
+    }
+
+    /**
+     * 处理非空分类删除问题
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(CategoryNotEmptyException.class)
+    public R<String> categoryNotEmptyHandler(CategoryNotEmptyException e) {
+        log.error(e.getMessage());
+        return R.error(e.getMessage());
     }
 }

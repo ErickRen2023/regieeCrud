@@ -2,7 +2,6 @@ package me.erickren.reggie.filter;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import me.erickren.reggie.common.BaseContext;
 import me.erickren.reggie.common.R;
 import org.springframework.util.AntPathMatcher;
 
@@ -37,9 +36,7 @@ public class LoginCheckFilter implements Filter {
         if (request.getSession().getAttribute("employee") != null) {
             filterChain.doFilter(request, response);
             Long id = (Long) request.getSession().getAttribute("employee");
-            log.info("登录成功，用户ID{}", id);
-            BaseContext.setCurrentId(id);
-            log.info( "线程ID线程ID线程ID线程ID线程ID线程ID线程ID线程ID线程ID线程ID" + Thread.currentThread().getId());
+            log.info("登录放行，用户ID{}", id);
             return;
         }
 
