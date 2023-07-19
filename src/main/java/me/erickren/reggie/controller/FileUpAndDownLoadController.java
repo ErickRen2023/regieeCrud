@@ -12,7 +12,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -38,7 +37,7 @@ public class FileUpAndDownLoadController {
             return R.error("上传文件出错，后台返回为NULL");
         }
         String originalFilename = file.getOriginalFilename();
-        String suffix = null;
+        String suffix;
         if (originalFilename != null) {
             suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
         } else {
@@ -58,10 +57,10 @@ public class FileUpAndDownLoadController {
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response)  {
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(basePath + name));
+            FileInputStream fileInputStream = new FileInputStream(basePath + name);
             ServletOutputStream outputStream = response.getOutputStream();
             response.setContentType("image/jpeg");
-            int len = 0;
+            int len;
             byte[] bytes = new byte[1024];
             while ((len = fileInputStream.read(bytes)) != -1) {
                 outputStream.write(bytes, 0, len);

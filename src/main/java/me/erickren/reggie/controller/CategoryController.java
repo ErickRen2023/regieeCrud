@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
+import java.util.List;
 
 /**
  * DateTime: 2023/07/17 - 17:00
@@ -28,9 +26,9 @@ public class CategoryController {
 
     /**
      * 添加分类
-     * @param request
-     * @param category
-     * @return
+     * @param request r
+     * @param category 分类模型
+     * @return R
      */
     @PostMapping
     public R<String> addCategory(HttpServletRequest request, @RequestBody Category category) {
@@ -42,9 +40,9 @@ public class CategoryController {
 
     /**
      * 分页查询
-     * @param page
-     * @param pageSize
-     * @return
+     * @param page 页面
+     * @param pageSize 单页数量
+     * @return R
      */
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize) {
@@ -57,8 +55,8 @@ public class CategoryController {
 
     /**
      * 删除分类
-     * @param ids
-     * @return
+     * @param ids id
+     * @return R
      */
     @DeleteMapping
     public R<String> delete(Long ids) {
@@ -68,13 +66,27 @@ public class CategoryController {
 
     /**
      * 由ID修改分类信息
-     * @param category
-     * @return
+     * @param category 分类模型
+     * @return R
      */
     @PutMapping
     public R<String> update(HttpServletRequest request, @RequestBody Category category) {
         category.setUpdateUser(((Long) request.getSession().getAttribute("employee")));
         categoryService.updateById(category);
         return R.success("修改分类信息成功！");
+    }
+
+    /**
+     * 获取分类列表
+     * @param category 分类模型
+     * @return R
+     */
+    @GetMapping("/list")
+    public R<List<Category>> list(Category category) {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(category.getType() != null, Category::getType, category.getType());
+        queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+        List<Category> list = categoryService.list(queryWrapper);
+        return R.success(list);
     }
 }

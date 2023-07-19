@@ -1,6 +1,7 @@
 package me.erickren.reggie.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import me.erickren.reggie.dto.DishDto;
 import me.erickren.reggie.pojo.Dish;
 
 /**
@@ -8,4 +9,10 @@ import me.erickren.reggie.pojo.Dish;
  * Author: ErickRen
  */
 public interface DishService extends IService<Dish> {
+
+    /**
+     * 新增菜品 伴随口味
+     * @param dishDto 传输模型
+     */
+    void saveWithFlavors(DishDto dishDto);
 }

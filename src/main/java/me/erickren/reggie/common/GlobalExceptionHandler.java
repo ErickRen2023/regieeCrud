@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 @ControllerAdvice(annotations = {RestControllerAdvice.class, Controller.class})
@@ -17,7 +18,8 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理SQL重复异常
-     * @return
+     * @param e 异常
+     * @return R
      */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public R<String> exceptionHandler(SQLIntegrityConstraintViolationException e) {
@@ -33,12 +35,23 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理非空分类删除问题
-     * @param e
-     * @return
+     * @param e 异常
+     * @return R
      */
     @ExceptionHandler(CategoryNotEmptyException.class)
     public R<String> categoryNotEmptyHandler(CategoryNotEmptyException e) {
         log.error(e.getMessage());
         return R.error(e.getMessage());
+    }
+
+    /**
+     * 处理图片文件失效
+     * @param e 异常
+     * @return R
+     */
+    @ExceptionHandler(FileNotFoundException.class)
+    public R<String> fileNotFoundHandler(FileNotFoundException e) {
+        log.error("未找到图片{}", e.getMessage());
+        return R.error("未找到指定文件" + e.getMessage());
     }
 }
