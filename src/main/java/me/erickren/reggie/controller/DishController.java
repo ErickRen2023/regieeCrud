@@ -2,6 +2,7 @@ package me.erickren.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import me.erickren.reggie.common.R;
 import me.erickren.reggie.dto.DishDto;
 import me.erickren.reggie.pojo.Dish;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/dish")
+@Slf4j
 public class DishController {
 
     @Autowired
@@ -49,8 +51,26 @@ public class DishController {
         dish.setCreateUser((Long) request.getSession().getAttribute("employee"));
         dish.setUpdateUser((Long) request.getSession().getAttribute("employee"));
         dishService.saveWithFlavors(dish);
-        return R.success("上传成功！");
+        return R.success("上传成功");
     }
+
+    /**
+     * 修改菜品
+     * @param request r
+     * @param dish 菜品模型
+     * @return R
+     */
+    @PutMapping
+    public R<String> update(HttpServletRequest request, @RequestBody DishDto dish) {
+        for (DishFlavor flavor : dish.getFlavors()) {
+            flavor.setCreateUser((Long) request.getSession().getAttribute("employee"));
+            flavor.setUpdateUser((Long) request.getSession().getAttribute("employee"));
+        }
+        dish.setUpdateUser((Long) request.getSession().getAttribute("employee"));
+        dishService.updateWithFlavors(dish);
+        return R.success("修改成功");
+    }
+
 
     /**
      * 分页查询
@@ -80,5 +100,57 @@ public class DishController {
 
         dishDtoPage.setRecords(list);
         return R.success(dishDtoPage);
+    }
+
+    /**
+     * 根据id获取菜品
+     * @param id id
+     * @return R
+     */
+    @GetMapping("/{id}")
+    public R<DishDto> getById(@PathVariable Long id) {
+        DishDto dishDto = dishService.getByIdWithFlavor(id);
+        return R.success(dishDto);
+    }
+
+    /**
+     * 设置停售起售状态
+     * @param statusNumber 停起售状态
+     * @param ids id
+     * @return R
+     */
+    @PostMapping("/status/{statusNumber}")
+    public R<String> stopSell(@PathVariable int statusNumber, String ids) {
+        if (ids.contains(",")) {
+            String[] split = ids.split(",");
+            for (String s : split) {
+                Dish dish = dishService.getById(Long.valueOf(s));
+                dish.setStatus(statusNumber);
+                dishService.updateById(dish);
+            }
+        } else {
+            Dish dish = dishService.getById(Long.valueOf(ids));
+            dish.setStatus(statusNumber);
+            dishService.updateById(dish);
+        }
+        return R.success("修改成功");
+    }
+
+    /**
+     * 删除
+     * @param ids id
+     * @return R
+     */
+    @DeleteMapping
+    public R<String> delete(String ids) {
+        if (ids.contains(",")) {
+            String[] split = ids.split(",");
+            for (String s : split) {
+                dishService.removeById(Long.valueOf(s));
+            }
+        } else {
+            dishService.removeById(Long.valueOf(ids));
+        }
+        return R.success("删除成功");
     }
 }
