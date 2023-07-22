@@ -2,6 +2,7 @@ package me.erickren.reggie.common;
 
 import lombok.extern.slf4j.Slf4j;
 import me.erickren.reggie.exception.CategoryNotEmptyException;
+import me.erickren.reggie.exception.SetmealSellingException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -53,5 +54,16 @@ public class GlobalExceptionHandler {
     public R<String> fileNotFoundHandler(FileNotFoundException e) {
         log.error("未找到图片{}", e.getMessage());
         return R.error("未找到指定文件" + e.getMessage());
+    }
+
+    /**
+     * 套餐仍在售卖异常
+     * @param e 异常
+     * @return R
+     */
+    @ExceptionHandler(SetmealSellingException.class)
+    public R<String> setmealSellingHandler(SetmealSellingException e) {
+        log.error(e.getMessage());
+        return R.error("套餐仍在售卖，无法删除。");
     }
 }
